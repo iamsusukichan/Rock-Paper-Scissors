@@ -37,7 +37,7 @@ $myhands.addEventListener("click", e => {
       img[i].classList.add("hide");
     }
   }
-
+  addRound();
   battle(myChoice.id);
 });
 
@@ -50,6 +50,7 @@ const shuffle = () => {
 //display opponent hand
 const getOpponentChoice = () => {
   const oppChoice = shuffle();
+
   $oppHands.innerHTML = `<img src="img/${oppChoice}.png" id="${oppChoice}" class="enlarge"/>`;
 
   return oppChoice;
@@ -78,67 +79,42 @@ const battle = a => {
       setTimeout(tie, 800);
   }
 };
-//scoring stars
-// const setDefaultStars = () => {
-//   $stars.forEach(star => {
-//     star.innerHTML = "";
-//     star.appendChild(createStar(true));
-//     star.appendChild(createStar(false));
-//     star.appendChild(createStar(false));
-//   });
-// };
 
-// const createStar = isEmpty => {
-//   const $ele = document.createElement("li");
-//   $ele.innerHTML = `<i class="${isEmpty ? "fas" : "far"} fa-star fa-lg"></i>`;
-//   return $ele;
-// };
-
-// const starCounter = () => {
-//   if(myPoints===0 && )
-
-//   //if my stars/oppstars ===3 handleWon();
-// };
+const setDefaultStars = () => {
+  $stars.forEach(star => {
+    star.innerHTML =
+      '<li><i class="far fa-star fa-lg"></i></li><li><i class="far fa-star fa-lg"></i></li><li><i class="far fa-star fa-lg"></i></li>';
+  });
+};
 
 const iWinThisRound = myPoints => {
   if (myPoints === WIN_CONDITION) {
+    $myStars.children[myPoints - 1].innerHTML =
+      '<i class="fas fa-star fa-lg"></i>';
     globalGameState = gameState.won;
     setTimeout(handleWon, 800);
   }
   $myStars.children[myPoints - 1].innerHTML =
     '<i class="fas fa-star fa-lg"></i>';
+  setTimeout(makeGame, 1500);
 };
 
 const iLoseThisRound = oppPoints => {
   if (oppPoints === WIN_CONDITION) {
+    $oppStars.children[oppPoints - 1].innerHTML =
+      '<i class="fas fa-star fa-lg"></i>';
     globalGameState = gameState.won;
-    setTimeout(handleWon, 800);
+    setTimeout(handleLose, 800);
   }
   $oppStars.children[oppPoints - 1].innerHTML =
     '<i class="fas fa-star fa-lg"></i>';
+  setTimeout(makeGame, 1500);
 };
-// const iLoseThisRound = oppPoints => {
-//   $oppStars.innerHTML = "";
-//   if (oppPoints === 1) {
-//     $oppStars.appendChild(createStar(true));
-//     $oppStars.appendChild(createStar(false));
-//     $oppStars.appendChild(createStar(false));
-//   }
-//   if (oppPoints === 2) {
-//     $oppStars.appendChild(createStar(true));
-//     $oppStars.appendChild(createStar(true));
-//     $oppStars.appendChild(createStar(false));
-//   }
-//   if (oppPoints === WIN_CONDITION) {
-//     $oppStars.appendChild(createStar(true));
-//     $oppStars.appendChild(createStar(true));
-//     $oppStars.appendChild(createStar(true));
-//   }
-// };
+
 //won
 const win = () => {
   $result.textContent = "You Win!";
-  addRound();
+  // addRound();
   myPoints += 1;
   iWinThisRound(myPoints);
 };
@@ -146,7 +122,7 @@ const win = () => {
 //lose
 const lose = () => {
   $result.textContent = "You lose!";
-  addRound();
+  // addRound();
   oppPoints += 1;
   iLoseThisRound(oppPoints);
 };
@@ -154,20 +130,31 @@ const lose = () => {
 //tie
 const tie = () => {
   $result.textContent = "Tie!";
-  addRound();
+  // addRound();
+  setTimeout(makeGame, 1500);
 };
+
+//makeGame
+
+const makeGame = () => {
+  const img = document.querySelectorAll(".myHands li img");
+  for (i = 0; i < img.length; i++) {
+    img[i].classList.remove("enlarge", "hide");
+  }
+  $oppHands.innerHTML =
+    '<li><img src="img/op.png" id="op" /></li><li><img src="img/os.png" id="os" /></li><li><img src="img/or.png" id="or" /></li>';
+  $result.textContent = "";
+};
+
 //reset game
-
-const nextGame = () => {};
-
 const restartGame = () => {
   globalGameState = gameState.idle;
   makeGame();
-  //setdefault star
-  //set default round
+  $round.textContent = "0";
+  round = 0;
+  setDefaultStars();
 };
 const clickResetButton = () => {
-  makeGame();
   $reset.addEventListener("click", restartGame);
 };
 
@@ -181,4 +168,11 @@ const addRound = () => {
 const handleWon = () => {
   //reset counting?
   //modal (set time out: You won/lose the game in X rounds! with mickey love hands)
+  alert("you won the game");
+};
+
+const handleLose = () => {
+  //reset counting?
+  //modal (set time out: You won/lose the game in X rounds! with mickey love hands)
+  alert("you lose the game");
 };
