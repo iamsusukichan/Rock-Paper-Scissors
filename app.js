@@ -152,6 +152,8 @@ const restartGame = () => {
   makeGame();
   $round.textContent = "0";
   round = 0;
+  myPoints = 0;
+  oppPoints = 0;
   setDefaultStars();
 };
 const clickResetButton = () => {
