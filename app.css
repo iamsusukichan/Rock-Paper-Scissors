@@ -36,30 +36,31 @@ h3 {
   text-align: center;
 }
 
-.myStars,
-.oppStars,
+#myStars,
+#oppStars,
 .myHands,
 .oppHands {
   text-align: center;
   padding: 0;
 }
 
-.myStars li,
-.oppStars li,
+#myStars li,
+#oppStars li,
 .myHands li,
 .oppHands li {
   list-style: none;
   display: inline-block;
 }
 
-.myHands img {
-  width: 15vw;
+.myHands img,
+.oppHands img {
+  width: 12vw;
 }
 
-.oppHands img {
+/* .oppHands img {
   width: 20vw;
   transition: ease width 0.3s;
-}
+} */
 
 .flex-container {
   display: flex;
@@ -78,7 +79,8 @@ section {
   display: none;
 }
 
-.myHands img.enlarge {
+.myHands img.enlarge,
+.oppHands img.enlarge {
   width: 20vw;
   transition: ease width 0.3s;
 }

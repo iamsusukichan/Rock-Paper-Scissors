@@ -29,8 +29,8 @@
     <div class="flex-container">
       <section class="mySide">
         <h3>Your score</h3>
-        <ul class="myStars">
-          <li><i class="fas fa-star fa-lg"></i></li>
+        <ul id="myStars" class="stars">
+          <li><i class="far fa-star fa-lg"></i></li>
           <li><i class="far fa-star fa-lg"></i></li>
           <li><i class="far fa-star fa-lg"></i></li>
         </ul>
@@ -44,13 +44,17 @@
 
       <section class="oppSide">
         <h3>Opponent's score</h3>
-        <ul class="oppStars">
-          <li><i class="fas fa-star fa-lg"></i></li>
+        <ul id="oppStars" class="stars">
+          <li><i class="far fa-star fa-lg"></i></li>
           <li><i class="far fa-star fa-lg"></i></li>
           <li><i class="far fa-star fa-lg"></i></li>
         </ul>
 
-        <ul class="oppHands"></ul>
+        <ul class="oppHands">
+          <li><img src="img/op.png" id="op" /></li>
+          <li><img src="img/os.png" id="os" /></li>
+          <li><img src="img/or.png" id="or" /></li>
+        </ul>
       </section>
     </div>
 

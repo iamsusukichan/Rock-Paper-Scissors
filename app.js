@@ -7,6 +7,9 @@ const $result = document.getElementById("result");
 const $myhands = document.querySelector(".myHands");
 const $oppHands = document.querySelector(".oppHands");
 const $round = document.querySelector(".round");
+const $myStars = document.getElementById("myStars");
+const $oppStars = document.getElementById("oppStars");
+const $stars = document.querySelectorAll(".stars");
 // const $mRock = document.querySelector(".mr");
 // const $mScissors = document.querySelector(".ms");
 // const $mPaper = document.querySelector(".mp");
@@ -18,6 +21,8 @@ let gameState = {
   won: "won"
 };
 let globalGameState = gameState.idle;
+let myPoints = 0;
+let oppPoints = 0;
 
 // -- Program ----------------------------------------------------------
 
@@ -45,9 +50,8 @@ const shuffle = () => {
 //display opponent hand
 const getOpponentChoice = () => {
   const oppChoice = shuffle();
-  const li = document.createElement("li");
-  li.innerHTML = `<img src="img/${oppChoice}.png" id="${oppChoice}" />`;
-  $oppHands.appendChild(li);
+  $oppHands.innerHTML = `<img src="img/${oppChoice}.png" id="${oppChoice}" class="enlarge"/>`;
+
   return oppChoice;
 };
 
@@ -75,22 +79,76 @@ const battle = a => {
   }
 };
 //scoring stars
-const setDefaultStars = () => {
-  //3粒吉星
+// const setDefaultStars = () => {
+//   $stars.forEach(star => {
+//     star.innerHTML = "";
+//     star.appendChild(createStar(true));
+//     star.appendChild(createStar(false));
+//     star.appendChild(createStar(false));
+//   });
+// };
+
+// const createStar = isEmpty => {
+//   const $ele = document.createElement("li");
+//   $ele.innerHTML = `<i class="${isEmpty ? "fas" : "far"} fa-star fa-lg"></i>`;
+//   return $ele;
+// };
+
+// const starCounter = () => {
+//   if(myPoints===0 && )
+
+//   //if my stars/oppstars ===3 handleWon();
+// };
+
+const iWinThisRound = myPoints => {
+  if (myPoints === WIN_CONDITION) {
+    globalGameState = gameState.won;
+    setTimeout(handleWon, 800);
+  }
+  $myStars.children[myPoints - 1].innerHTML =
+    '<i class="fas fa-star fa-lg"></i>';
 };
 
-const starCounter = () => {};
-
+const iLoseThisRound = oppPoints => {
+  if (oppPoints === WIN_CONDITION) {
+    globalGameState = gameState.won;
+    setTimeout(handleWon, 800);
+  }
+  $oppStars.children[oppPoints - 1].innerHTML =
+    '<i class="fas fa-star fa-lg"></i>';
+};
+// const iLoseThisRound = oppPoints => {
+//   $oppStars.innerHTML = "";
+//   if (oppPoints === 1) {
+//     $oppStars.appendChild(createStar(true));
+//     $oppStars.appendChild(createStar(false));
+//     $oppStars.appendChild(createStar(false));
+//   }
+//   if (oppPoints === 2) {
+//     $oppStars.appendChild(createStar(true));
+//     $oppStars.appendChild(createStar(true));
+//     $oppStars.appendChild(createStar(false));
+//   }
+//   if (oppPoints === WIN_CONDITION) {
+//     $oppStars.appendChild(createStar(true));
+//     $oppStars.appendChild(createStar(true));
+//     $oppStars.appendChild(createStar(true));
+//   }
+// };
 //won
 const win = () => {
   $result.textContent = "You Win!";
   addRound();
+  myPoints += 1;
+  iWinThisRound(myPoints);
 };
 
 //lose
 const lose = () => {
   $result.textContent = "You lose!";
   addRound();
+  oppPoints += 1;
+  iLoseThisRound(oppPoints);
 };
 
 //tie
@@ -99,8 +157,18 @@ const tie = () => {
   addRound();
 };
 //reset game
-const resetGame = () => {
-  round = 0;
+
+const nextGame = () => {};
+
+const restartGame = () => {
+  globalGameState = gameState.idle;
+  makeGame();
+  //setdefault star
+  //set default round
+};
+const clickResetButton = () => {
+  makeGame();
+  $reset.addEventListener("click", restartGame);
 };
 
 //round
@@ -108,4 +176,9 @@ const addRound = () => {
   round = round + 1;
   $round.textContent = round;
   return round;
+};
+
+const handleWon = () => {
+  //reset counting?
+  //modal (set time out: You won/lose the game in X rounds! with mickey love hands)
 };
