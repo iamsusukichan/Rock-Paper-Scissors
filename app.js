@@ -10,9 +10,12 @@ const $round = document.querySelector(".round");
 const $myStars = document.getElementById("myStars");
 const $oppStars = document.getElementById("oppStars");
 const $stars = document.querySelectorAll(".stars");
-// const $mRock = document.querySelector(".mr");
-// const $mScissors = document.querySelector(".ms");
-// const $mPaper = document.querySelector(".mp");
+const $modal = document.querySelector(".modal");
+const $overlay = document.querySelector(".overlay");
+const $modalButton = document.querySelector(".modal_button");
+const $closeButton = document.querySelector(".close_modal");
+const $winORlose = document.getElementById("winORlose");
+const $roundsToEnd = document.getElementById("roundsToEnd");
 
 let round = 0;
 let gameState = {
@@ -104,7 +107,7 @@ const iLoseThisRound = oppPoints => {
     $oppStars.children[oppPoints - 1].innerHTML =
       '<i class="fas fa-star fa-lg"></i>';
     globalGameState = gameState.won;
-    setTimeout(handleLose, 800);
+    setTimeout(handleWon, 800);
   }
   $oppStars.children[oppPoints - 1].innerHTML =
     '<i class="fas fa-star fa-lg"></i>';
@@ -114,7 +117,6 @@ const iLoseThisRound = oppPoints => {
 //won
 const win = () => {
   $result.textContent = "You Win!";
-  // addRound();
   myPoints += 1;
   iWinThisRound(myPoints);
 };
@@ -122,7 +124,6 @@ const win = () => {
 //lose
 const lose = () => {
   $result.textContent = "You lose!";
-  // addRound();
   oppPoints += 1;
   iLoseThisRound(oppPoints);
 };
@@ -130,7 +131,6 @@ const lose = () => {
 //tie
 const tie = () => {
   $result.textContent = "Tie!";
-  // addRound();
   setTimeout(makeGame, 1500);
 };
 
@@ -166,13 +166,24 @@ const addRound = () => {
 };
 
 const handleWon = () => {
-  //reset counting?
-  //modal (set time out: You won/lose the game in X rounds! with mickey love hands)
-  alert("you won the game");
-};
+  $modal.style.display = "block";
+  $overlay.style.display = "block";
 
-const handleLose = () => {
-  //reset counting?
-  //modal (set time out: You won/lose the game in X rounds! with mickey love hands)
-  alert("you lose the game");
+  if (myPoints === WIN_CONDITION) {
+    $winORlose.innerHTML = "win";
+  }
+  if (oppPoints === WIN_CONDITION) {
+    $winORlose.innerHTML = "lose";
+  }
+  $roundsToEnd.innerHTML = $round.textContent;
+
+  $modalButton.addEventListener("click", e => {
+    $modal.style.display = "none";
+    $overlay.style.display = "none";
+  });
+  $closeButton.addEventListener("click", e => {
+    $modal.style.display = "none";
+    $overlay.style.display = "none";
+  });
+  restartGame();
 };
