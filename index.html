@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Rock Paper Scissors</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+      integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Rajdhani:400,700"
+      rel="stylesheet"
+    />
+    <link rel="shortcut icon" href="img/favicon.ico" />
+    <link rel="stylesheet" type="text/css" media="screen" href="app.css" />
+  </head>
+
+  <body>
+    <h1>Rock Paper Scissors</h1>
+    <h2>
+      Round <span class="round">0</span>
+      <span id="reset"
+        ><i onclick="clickResetButton()" class="fas fa-undo fa-xs"></i
+      ></span>
+    </h2>
+
+    <div class="flex-container">
+      <section class="mySide">
+        <h3>Your score</h3>
+        <ul id="myStars" class="stars">
+          <li><i class="far fa-star fa-lg"></i></li>
+          <li><i class="far fa-star fa-lg"></i></li>
+          <li><i class="far fa-star fa-lg"></i></li>
+        </ul>
+
+        <ul class="myHands">
+          <li><img src="img/mp.png" id="mp" /></li>
+          <li><img src="img/ms.png" id="ms" /></li>
+          <li><img src="img/mr.png" id="mr" /></li>
+        </ul>
+      </section>
+
+      <section class="oppSide">
+        <h3>Opponent's score</h3>
+        <ul id="oppStars" class="stars">
+          <li><i class="far fa-star fa-lg"></i></li>
+          <li><i class="far fa-star fa-lg"></i></li>
+          <li><i class="far fa-star fa-lg"></i></li>
+        </ul>
+
+        <ul class="oppHands">
+          <li><img src="img/op.png" id="op" /></li>
+          <li><img src="img/os.png" id="os" /></li>
+          <li><img src="img/or.png" id="or" /></li>
+        </ul>
+      </section>
+    </div>
+
+    <h1 id="result"></h1>
+
+    <section class="modal">
+      <span class="close_modal">×</span>
+      <img class="love" src="img/love.png" alt="winning message" />
+      <h3 class="winningMessage">
+        Thanks for playing with me! <br />You
+        <span id="winORlose">win</span> the game in
+        <span id="roundsToEnd">5</span> rounds!
+      </h3>
+
+      <button class="modal_button">Play Again</button>
+    </section>
+    <div class="overlay"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
