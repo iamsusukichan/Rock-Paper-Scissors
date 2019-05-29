@@ -16,64 +16,39 @@
       rel="stylesheet"
     />
     <link rel="shortcut icon" href="img/favicon.ico" />
-    <link rel="stylesheet" type="text/css" media="screen" href="app.css" />
+    <link rel="stylesheet" media="screen" href="app.css" />
   </head>
 
   <body>
-    <h1>Rock Paper Scissors</h1>
-    <h2>
-      Round <span class="round">0</span>
-      <span id="reset"
-        ><i onclick="clickResetButton()" class="fas fa-undo fa-xs"></i
-      ></span>
+    <h1 class="title--primary">Rock Paper Scissors</h1>
+    <h2 class="title--subheader">
+      Round <span id="js-round">0</span>
+      <span id="js-reset-btn"><i class="fas fa-undo fa-xs"></i></span>
     </h2>
 
     <div class="flex-container">
-      <section class="mySide">
-        <h3>Your score</h3>
-        <ul id="myStars" class="stars">
-          <li><i class="far fa-star fa-lg"></i></li>
-          <li><i class="far fa-star fa-lg"></i></li>
-          <li><i class="far fa-star fa-lg"></i></li>
-        </ul>
-
-        <ul class="myHands">
-          <li><img src="img/mp.png" id="mp" /></li>
-          <li><img src="img/ms.png" id="ms" /></li>
-          <li><img src="img/mr.png" id="mr" /></li>
-        </ul>
+      <section id="player" class="controls">
+        <h3 class="controls__title">Your score</h3>
+        <ul class="js-score controls__score"></ul>
+        <ul class="js-choices controls__choices"></ul>
       </section>
-
-      <section class="oppSide">
-        <h3>Opponent's score</h3>
-        <ul id="oppStars" class="stars">
-          <li><i class="far fa-star fa-lg"></i></li>
-          <li><i class="far fa-star fa-lg"></i></li>
-          <li><i class="far fa-star fa-lg"></i></li>
-        </ul>
-
-        <ul class="oppHands">
-          <li><img src="img/op.png" id="op" /></li>
-          <li><img src="img/os.png" id="os" /></li>
-          <li><img src="img/or.png" id="or" /></li>
-        </ul>
+      <section id="opponent" class="controls">
+        <h3 class="controls__title">Opponent's score</h3>
+        <ul class="js-score controls__score"></ul>
+        <ul class="js-choices controls__choices"></ul>
       </section>
     </div>
 
-    <h1 id="result"></h1>
+    <h1 id="js-result--output" class="title--primary"></h1>
 
-    <section class="modal">
-      <span class="close_modal">×</span>
-      <img class="love" src="img/love.png" alt="winning message" />
-      <h3 class="winningMessage">
-        Thanks for playing with me! <br />You
-        <span id="winORlose">win</span> the game in
-        <span id="roundsToEnd">5</span> rounds!
-      </h3>
+    <div id="js-modal" class="modal">
+      <section id="js-modal__wrapper" class="modal__wrapper">
+        <img class="image--center" src="img/love.png" alt="winning message" />
+        <h3 id="js-modal__content" class="modal__content"></h3>
+        <button id="js-modal__btn" class="button">Play Again</button>
+      </section>
+    </div>
 
-      <button class="modal_button">Play Again</button>
-    </section>
-    <div class="overlay"></div>
     <script src="app.js"></script>
   </body>
 </html>

@@ -1,191 +1,282 @@
+//-- Constants---------------------------------------------------------
 const WIN_CONDITION = 3;
+const CHOICES = ["r", "s", "p"];
 
-//-- Dom Handles ------------------------------------------------------
+const Star = {
+  solid: '<i class="fas fa-star fa-lg"></i>',
+  regular: '<i class="far fa-star fa-lg"></i>'
+};
 
-const $reset = document.getElementById("reset");
-const $result = document.getElementById("result");
-const $myhands = document.querySelector(".myHands");
-const $oppHands = document.querySelector(".oppHands");
-const $round = document.querySelector(".round");
-const $myStars = document.getElementById("myStars");
-const $oppStars = document.getElementById("oppStars");
-const $stars = document.querySelectorAll(".stars");
-const $modal = document.querySelector(".modal");
-const $overlay = document.querySelector(".overlay");
-const $modalButton = document.querySelector(".modal_button");
-const $closeButton = document.querySelector(".close_modal");
-const $winORlose = document.getElementById("winORlose");
-const $roundsToEnd = document.getElementById("roundsToEnd");
-
-let round = 0;
-let gameState = {
+const GameModes = {
   playing: "playing",
   idle: "idle",
   won: "won"
 };
-let globalGameState = gameState.idle;
-let myPoints = 0;
-let oppPoints = 0;
 
-// -- Program ----------------------------------------------------------
-
-//handle click-->return user choice --> pass it to compare --> add .hide to hide the non chosen 2 options --> add .enlarge to the chosen one
-
-$myhands.addEventListener("click", e => {
-  const myChoice = e.target;
-  myChoice.classList.add("enlarge");
-  const img = document.querySelectorAll(".myHands li img");
-  for (i = 0; i < img.length; i++) {
-    if (img[i].classList.contains("enlarge") !== true) {
-      img[i].classList.add("hide");
-    }
-  }
-  addRound();
-  battle(myChoice.id);
-});
-
-//shuffle opponent hands
-const shuffle = () => {
-  const oppChoice = ["or", "os", "op"];
-  return oppChoice[Math.floor(Math.random() * 3)];
+const GameMsgs = {
+  win: "You win",
+  lose: "You lose",
+  tie: "Tie",
+  empty: ""
 };
 
-//display opponent hand
+//-- Dom Handles ------------------------------------------------------
+const $reset = document.getElementById("js-reset-btn");
+const $result = document.getElementById("js-result--output");
+
+const $player = document.getElementById("player");
+const $playerScore = $player.querySelector(".js-score");
+const $playerChoices = $player.querySelector(".js-choices");
+
+const $opponent = document.getElementById("opponent");
+const $opponentScore = $opponent.querySelector(".js-score");
+const $opponentChoices = $opponent.querySelector(".js-choices");
+
+const $round = document.getElementById("js-round");
+
+const $modal = document.getElementById("js-modal");
+const $modalWrapper = $modal.querySelector("#js-modal__wrapper");
+const $modalBtn = $modalWrapper.querySelector("#js-modal__btn");
+const $modalContent = $modalWrapper.querySelector("#js-modal__content");
+
+let globalState;
+
+const State = {
+  set: f => {
+    const stateNew = f(State.get());
+    globalState = stateNew;
+    return globalState;
+  },
+  get: () => globalState,
+  new: () => ({
+    mode: GameModes.idle,
+    playerPoints: 0,
+    playerChoice: null,
+    opponentPoints: 0,
+    opponentChoice: null,
+    round: 0,
+    msg: GameMsgs.empty
+  })
+};
+
+const logState = () => {
+  console.info(State.get());
+};
+
+//-- Helpers -----------------------------------------------------------
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+//-- Modal -------------------------------------------------------------
+const Modal = {
+  enable: () => {
+    $modal.style.display = "flex";
+  },
+  disable: () => {
+    $modal.style.display = "none";
+  },
+  controls: e => {
+    Modal.disable();
+    startNewGame();
+  },
+  setup: () => {
+    $modalBtn.addEventListener("click", Modal.controls);
+  },
+  mkContent: (msg, rounds) => `
+    <p>Thanks for playing with me!</p>
+    <p>
+      You
+      <span>${msg}</span> the game in
+      <span>${rounds}</span> rounds!
+    </p>
+  `
+};
+
+// -- Program ----------------------------------------------------------
+const playerChoicesView = `
+  <li>
+    <img data-clickable="1" src="img/mp.png" id="p" class="option" />
+  </li>
+  <li>
+    <img data-clickable="1" src="img/ms.png" id="s" class="option" />
+  </li>
+  <li>
+    <img data-clickable="1" src="img/mr.png" id="r" class="option" />
+  </li>
+`;
+
+const opponentChoicesView = `
+  <li>
+    <img src="img/op.png" id="p" class="option" />
+  </li>
+  <li>
+    <img src="img/os.png" id="s" class="option" />
+  </li>
+  <li>
+    <img src="img/or.png" id="r" class="option" />
+  </li>
+`;
+
+const renderChoice = ($elem, { choice }) => {
+  const focusCls = "option--focus";
+  const blurCls = "option--blur";
+
+  if (choice === null) {
+    CHOICES.forEach(c => {
+      $elem.querySelector(`#${c}`).classList.remove(blurCls, focusCls);
+    });
+  } else {
+    const xs = new Set(CHOICES);
+    xs.delete(choice);
+
+    $elem.querySelector(`#${choice}`).classList.add(focusCls);
+    xs.forEach(c => {
+      $elem.querySelector(`#${c}`).classList.add(blurCls);
+    });
+  }
+};
+
+const renderGame = state => {
+  const { playerPoints, playerChoice, opponentPoints, opponentChoice } = state;
+
+  renderScore($playerScore, playerPoints);
+  renderScore($opponentScore, opponentPoints);
+
+  renderChoice($playerChoices, { choice: playerChoice });
+  renderChoice($opponentChoices, { choice: opponentChoice });
+
+  $round.textContent = state.round;
+  $result.textContent = state.msg;
+
+  if (state.mode === GameModes.won) {
+    let msg = "";
+
+    if (playerPoints === WIN_CONDITION) {
+      msg = "win";
+    } else if (opponentPoints === WIN_CONDITION) {
+      msg = "lose";
+    } else {
+      msg = "<impossible case>";
+    }
+
+    $modalContent.innerHTML = Modal.mkContent(msg, state.round);
+    Modal.enable();
+  }
+};
+
 const getOpponentChoice = () => {
-  const oppChoice = shuffle();
-
-  $oppHands.innerHTML = `<img src="img/${oppChoice}.png" id="${oppChoice}" class="enlarge"/>`;
-
-  return oppChoice;
+  return CHOICES[Math.floor(Math.random() * 3)];
 };
 
 //matching hands
 //switch --> win, lose, tie situations
+const mkBattle = (a, b, state) => {
+  const c = a + b;
 
-const battle = a => {
-  const b = getOpponentChoice();
-  c = a + b;
   switch (c) {
-    case "mpor":
-    case "msop":
-    case "mros":
-      setTimeout(win, 800);
-      break;
-    case "mpos":
-    case "msor":
-    case "mrop":
-      setTimeout(lose, 800);
-      break;
-    case "mpop":
-    case "msos":
-    case "mror":
-      setTimeout(tie, 800);
+    case "pr":
+    case "sp":
+    case "rs": {
+      // Player Win
+      return {
+        ...state,
+        playerPoints: state.playerPoints + 1,
+        msg: GameMsgs.win
+      };
+    }
+    case "ps":
+    case "sr":
+    case "rp": {
+      // Player Lose
+      return {
+        ...state,
+        opponentPoints: state.opponentPoints + 1,
+        msg: GameMsgs.lose
+      };
+    }
+    case "pp":
+    case "ss":
+    case "rr": {
+      // Player Tie
+      return {
+        ...state,
+        msg: GameMsgs.tie
+      };
+    }
   }
 };
 
-const setDefaultStars = () => {
-  $stars.forEach(star => {
-    star.innerHTML =
-      '<li><i class="far fa-star fa-lg"></i></li><li><i class="far fa-star fa-lg"></i></li><li><i class="far fa-star fa-lg"></i></li>';
-  });
+const renderScore = ($elem, num) => {
+  const stars = [
+    ...Array.from({ length: num }, () => Star.solid),
+    ...Array.from({ length: WIN_CONDITION - num }, () => Star.regular)
+  ];
+
+  $elem.innerHTML = stars.map(s => `<li>${s}</li>`).join("");
 };
 
-const iWinThisRound = myPoints => {
-  if (myPoints === WIN_CONDITION) {
-    $myStars.children[myPoints - 1].innerHTML =
-      '<i class="fas fa-star fa-lg"></i>';
-    globalGameState = gameState.won;
-    setTimeout(handleWon, 800);
+const onPlayerSelection = e => {
+  logState();
+  let state = State.get();
+
+  if (
+    state.mode === GameModes.playing ||
+    !Boolean(parseInt(e.target.dataset.clickable, 10))
+  ) {
+    return;
   }
-  $myStars.children[myPoints - 1].innerHTML =
-    '<i class="fas fa-star fa-lg"></i>';
-  setTimeout(makeGame, 1500);
+
+  const playerChoice = e.target.id;
+  const opponentChoice = getOpponentChoice();
+
+  renderGame(
+    State.set(state => ({
+      ...state,
+      mode: GameModes.playing,
+      round: state.round + 1,
+      playerChoice,
+      opponentChoice
+    }))
+  );
+
+  state = State.set(state => mkBattle(playerChoice, opponentChoice, state));
+
+  delay(600)
+    .then(() => {
+      renderGame(state);
+      return delay(1800);
+    })
+    .then(() => {
+      const mode =
+        state.playerPoints === WIN_CONDITION ||
+        state.opponentPoints === WIN_CONDITION
+          ? GameModes.won
+          : GameModes.idle;
+
+      renderGame(
+        State.set(state => ({
+          ...state,
+          mode,
+          msg: GameMsgs.empty,
+          playerChoice: null,
+          opponentChoice: null
+        }))
+      );
+    });
 };
 
-const iLoseThisRound = oppPoints => {
-  if (oppPoints === WIN_CONDITION) {
-    $oppStars.children[oppPoints - 1].innerHTML =
-      '<i class="fas fa-star fa-lg"></i>';
-    globalGameState = gameState.won;
-    setTimeout(handleWon, 800);
-  }
-  $oppStars.children[oppPoints - 1].innerHTML =
-    '<i class="fas fa-star fa-lg"></i>';
-  setTimeout(makeGame, 1500);
+const startNewGame = () => {
+  const state = State.set(State.new);
+  renderGame(state);
 };
 
-//won
-const win = () => {
-  $result.textContent = "You Win!";
-  myPoints += 1;
-  iWinThisRound(myPoints);
+const main = () => {
+  $playerChoices.innerHTML = playerChoicesView;
+  $playerChoices.addEventListener("click", onPlayerSelection);
+
+  $opponentChoices.innerHTML = opponentChoicesView;
+  $reset.addEventListener("click", startNewGame);
+  Modal.setup();
+  startNewGame();
 };
 
-//lose
-const lose = () => {
-  $result.textContent = "You lose!";
-  oppPoints += 1;
-  iLoseThisRound(oppPoints);
-};
-
-//tie
-const tie = () => {
-  $result.textContent = "Tie!";
-  setTimeout(makeGame, 1500);
-};
-
-//makeGame
-
-const makeGame = () => {
-  const img = document.querySelectorAll(".myHands li img");
-  for (i = 0; i < img.length; i++) {
-    img[i].classList.remove("enlarge", "hide");
-  }
-  $oppHands.innerHTML =
-    '<li><img src="img/op.png" id="op" /></li><li><img src="img/os.png" id="os" /></li><li><img src="img/or.png" id="or" /></li>';
-  $result.textContent = "";
-};
-
-//reset game
-const restartGame = () => {
-  globalGameState = gameState.idle;
-  makeGame();
-  $round.textContent = "0";
-  round = 0;
-  myPoints = 0;
-  oppPoints = 0;
-  setDefaultStars();
-};
-const clickResetButton = () => {
-  $reset.addEventListener("click", restartGame);
-};
-
-//round
-const addRound = () => {
-  round = round + 1;
-  $round.textContent = round;
-  return round;
-};
-
-const handleWon = () => {
-  $modal.style.display = "block";
-  $overlay.style.display = "block";
-
-  if (myPoints === WIN_CONDITION) {
-    $winORlose.innerHTML = "win";
-  }
-  if (oppPoints === WIN_CONDITION) {
-    $winORlose.innerHTML = "lose";
-  }
-  $roundsToEnd.innerHTML = $round.textContent;
-
-  $modalButton.addEventListener("click", e => {
-    $modal.style.display = "none";
-    $overlay.style.display = "none";
-  });
-  $closeButton.addEventListener("click", e => {
-    $modal.style.display = "none";
-    $overlay.style.display = "none";
-  });
-  restartGame();
-};
+main();
