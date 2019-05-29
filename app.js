@@ -94,25 +94,25 @@ const Modal = {
 // -- Program ----------------------------------------------------------
 const playerChoicesView = `
   <li>
-    <img data-clickable="1" src="img/mp.png" id="p" class="option" />
+    <img data-clickable="1" src="./img/mp.png" id="p" class="option" />
   </li>
   <li>
-    <img data-clickable="1" src="img/ms.png" id="s" class="option" />
+    <img data-clickable="1" src="./img/ms.png" id="s" class="option" />
   </li>
   <li>
-    <img data-clickable="1" src="img/mr.png" id="r" class="option" />
+    <img data-clickable="1" src="./img/mr.png" id="r" class="option" />
   </li>
 `;
 
 const opponentChoicesView = `
   <li>
-    <img src="img/op.png" id="p" class="option" />
+    <img src="./img/op.png" id="p" class="option" />
   </li>
   <li>
-    <img src="img/os.png" id="s" class="option" />
+    <img src="./img/os.png" id="s" class="option" />
   </li>
   <li>
-    <img src="img/or.png" id="r" class="option" />
+    <img src="./img/or.png" id="r" class="option" />
   </li>
 `;
 
